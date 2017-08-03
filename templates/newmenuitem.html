@@ -2,9 +2,9 @@
 
 	<body>
 
-		<h1>New Movie</h1>
+		<h1>New Menu</h1>
 
-		<form action="{{ url_for('newMovie', genre_id = genre_id) }}" method = 'post'>
+		<form action="{{ url_for('newMenuItem', restaurant_id = restaurant_id) }}" method = 'post'>
 
 		<p>Title:</p>
 			<input type ='text' size='30' name='title'>
@@ -13,17 +13,37 @@
 		<br>
 			<textarea name="description"></textarea>
 		<br>
-		<p>Rating:</p>
+		<p>Price:</p>
 		<br>
-			<input type='text' size='30' name="rating">
+			<input type='text' size='30' name="price">
 		<br>
-		<p>Img_Url:</p>
-		<br>
-		<br>	
-			<input type='submit' value='Add'>
-		
-		</form>
+		<label for="course">Course:</label>
+			<div class="radio">
+				<label>
+					<input type="radio" name="course" id="course1" value="Appetizer">Appetizer
+				</label>
+				<br><br>
+				<label>
+					<input type="radio" name="course" id="course2" value="Entree">Entree
+				</label>
+				<br><br>
+				<label>
+					<input type="radio" name="course" id="course3" value="Dessert">Dessert
+				</label>
+				<br><br>
+				<label>
+					<input type="radio" name="course" id="course4" value="Beverage">Beverage
+				</label>
+				<br><br>
+			</div>
+
+			<a href = '{{url_for('showRestaurants', restaurant_id=restaurant_id)}}'><input type='submit' value='Create'></a>
+
+			<a href = '{{url_for('showRestaurants')}}'>
+				<input type='button', value = 'Cancel'>
+			</a>
+	</form>
 
 	</body>
 
-</html>			
+</html>

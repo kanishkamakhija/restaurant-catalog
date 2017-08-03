@@ -227,25 +227,32 @@ def newRestaurant():
 #delete a restaurant
 @app.route('/restaurant/<int:restaurant_id>/delete/', methods = ['GET', 'POST'])
 def deleteRestaurant(restaurant_id):
-    restaurantToDelete = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    restaurantToDelete = session.query(Restaurant).filter_by(id=restaurant_id).one_or_none()
     if 'username' not in login_session:
         return redirect('/login')
-    if restaurantToDelete.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()''>"
+    if restaurantToDelete and restaurantToDelete.user_id != login_session['user_id']:
+        flash('You are not authorized to delete this restaurant')
+        return redirect(url_for('showRestaurants'))
     if request.method == 'POST':
+        itemsToDelete = session.query(MenuItem).filter_by(restaurant_id = restaurantToDelete.id)
+        itemsToDelete.delete()
         session.delete(restaurantToDelete)
         flash('%s Successfully Deleted' % restaurantToDelete.name)
         session.commit()
-        return redirect(url_for('showRestaurants', restaurant_id = restaurant_id))
+        return redirect(url_for('showRestaurants'))
     else:
         return render_template('deleterestaurant.html', restaurant = restaurantToDelete)
 
 #edit the restaurant
 @app.route('/restaurant/<int:restaurant_id>/edit/', methods = ['GET', 'POST'])
 def editRestaurant(restaurant_id):
+    editedRestaurant = session.query(Restaurant).filter_by(id = restaurant_id).one_or_none()
     if 'username' not in login_session:
         return redirect('/login')
-    editedRestaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+    if editedRestaurant and editedRestaurant.user_id != login_session['user_id']:
+        flash('You are not authorized to edit this restaurant')
+        return redirect(url_for('showRestaurants'))
+
     if request.method == 'POST':
         if request.form['name']:
             editedRestaurant.name = request.form['name']
@@ -259,10 +266,13 @@ def editRestaurant(restaurant_id):
 @app.route('/restaurant/<int:restaurant_id>/')
 @app.route('/restaurant/<int:restaurant_id>/menu/')
 def showMenu(restaurant_id):
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one_or_none()
+    if not restaurant:
+        flash("Restaurant does not exist")
+        return redirect(url_for('showRestaurants'))
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
-    if 'username' not in login_session!=login_session['user_id']:
+    if 'username' not in login_session or restaurant.user_id != login_session['user_id']:
         return render_template('publicmenu.html', items = items, restaurant = restaurant, creator = creator)
     else:
         return render_template('menu.html', items = items, restaurant = restaurant, creator = creator)
@@ -273,9 +283,15 @@ def editMenuItem(restaurant_id, menu_id):
     if 'username' not in login_session:
         return redirect('/login')
     editedItem = session.query(MenuItem).filter_by(id=menu_id).one_or_none()
-    restaurantToDelete = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    restaurantToDelete = session.query(Restaurant).filter_by(id=restaurant_id).one_or_none()
+    if not restaurantToDelete:
+        flash('This restaurant does not exist')
+        return redirect(url_for('showRestaurants'))
+    if not editedItem:
+        flash('This item does not exist')
+        return redirect(url_for('showMenu', restaurant_id=restaurant_id))
     if restaurantToDelete.user_id != login_session['user_id']:
-        flash('You are not authorized to edit this restaurant')
+        flash('You are not authorized to edit item from this restaurant menu')
         return redirect(url_for('showMenu', restaurant_id=restaurant_id))
     if request.method == 'POST':
         if request.form['name']:
@@ -298,7 +314,13 @@ def editMenuItem(restaurant_id, menu_id):
 def newMenuItem(restaurant_id):
     if 'username' not in login_session:
         return redirect('/login')
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one_or_none()
+    if not restaurant:
+        flash('This restaurant does not exist')
+        return redirect(url_for('showRestaurants'))
+    if login_session['user_id'] != restaurant.user_id:
+        flash('You are not authorized to create menu item for this restaurant')
+        return redirect(url_for('showMenu', restaurant_id=restaurant_id))
     if request.method == 'POST':
         newItem = MenuItem(name=request.form['title'], description=request.form['description'], price=request.form['price'], course=request.form['course'], restaurant_id=restaurant_id, user_id=restaurant.user_id)
         session.add(newItem)
@@ -313,10 +335,16 @@ def newMenuItem(restaurant_id):
 def deleteMenuItem(restaurant_id, menu_id):
     if 'username' not in login_session:
         return redirect('/login')
-    restaurantToDelete = session.query(Restaurant).filter_by(id=restaurant_id).one()
-    itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
+    restaurantToDelete = session.query(Restaurant).filter_by(id=restaurant_id).one_or_none()
+    if not restaurantToDelete:
+        flash('This restaurant does not exist')
+        return redirect(url_for('showRestaurants'))
+    itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one_or_none()
+    if not itemToDelete:
+        flash('This item does not exist')
+        return redirect(url_for('showMenu', restaurant_id=restaurant_id))
     if restaurantToDelete.user_id != login_session['user_id']:
-        flash('You are not authorized to delete this restaurant')
+        flash('You are not authorized to delete item from this restaurant menu')
         return redirect(url_for('showMenu', restaurant_id=restaurant_id))
     if request.method == 'POST':
         session.delete(itemToDelete)

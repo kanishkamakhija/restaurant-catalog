@@ -1,49 +1,32 @@
 <html>
-
-	<body>
-
-		<h1>New Menu</h1>
-
-		<form action="{{ url_for('newMenuItem', restaurant_id = restaurant_id) }}" method = 'post'>
-
-		<p>Title:</p>
-			<input type ='text' size='30' name='title'>
-		<br>
-		<p>Description:</p>
-		<br>
-			<textarea name="description"></textarea>
-		<br>
-		<p>Price:</p>
-		<br>
-			<input type='text' size='30' name="price">
-		<br>
-		<label for="course">Course:</label>
-			<div class="radio">
-				<label>
-					<input type="radio" name="course" id="course1" value="Appetizer">Appetizer
-				</label>
-				<br><br>
-				<label>
-					<input type="radio" name="course" id="course2" value="Entree">Entree
-				</label>
-				<br><br>
-				<label>
-					<input type="radio" name="course" id="course3" value="Dessert">Dessert
-				</label>
-				<br><br>
-				<label>
-					<input type="radio" name="course" id="course4" value="Beverage">Beverage
-				</label>
-				<br><br>
-			</div>
-
-			<a href = '{{url_for('showRestaurants', restaurant_id=restaurant_id)}}'><input type='submit' value='Create'></a>
-
-			<a href = '{{url_for('showRestaurants')}}'>
-				<input type='button', value = 'Cancel'>
-			</a>
-	</form>
-
-	</body>
-
+   <body>
+      <h1>New Menu</h1>
+      <form action="{{ url_for('newMenuItem', restaurant_id = restaurant_id) }}" method = 'post'>
+         <p>Title:</p>
+         <input type ='text' size='30' name='title' required>
+         <br>
+         <p>Description:</p>
+         <br>
+         <textarea name="description" required></textarea>
+         <br>
+         <p>Price:</p>
+         <br>
+         <input type='text' size='30' name="price" required>
+         <br>
+         <label for="course">Course:</label>
+         <select name="course" id="course" required>
+            <option selected disabled value >None</option>
+            <option value="Appetizer"> Appetizer</option>
+            <option value="Entree"> Entree</option>
+            <option value="Dessert">Dessert</option>
+            <option value="Beverage">Beverage</option>
+         </select>
+         <br><br>
+         <a href = '{{url_for('showRestaurants', restaurant_id=restaurant_id)}}'><input type='submit' value='Create'></a>
+         <br><br>
+         <a href = '{{url_for('showRestaurants')}}'>
+         <input type='button', value = 'Cancel'>
+         </a>
+      </form>
+   </body>
 </html>

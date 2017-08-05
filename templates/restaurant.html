@@ -1,56 +1,40 @@
 <html>
-	<body>
-		<h1>RESTAURANTS</h1>
-
-		{% with messages = get_flashed_messages() %}
-		{% if messages %}
-
-			<ul>
-			{% for message in messages %}
-
-				<li><strong>{{ message }}</strong></li>
-
-			{% endfor %}
-			</ul>
-
-		{% endif %}
-
-		{% endwith %}
-
-		{% if 'username' in login_session %}
-			<br><br>
-			<a href = '{{url_for('gdisconnect') }}'>LOGOUT</a>
-			<br><br>
-			<a href = '{{url_for('newRestaurant') }}'>Add a Restaurant</a>
-		{% else %}
-			<div class="row top-menu">
-				<div class="col-md-10"></div>
-				<div class="col-md-2 text-right">
-					<a href="{{url_for('showLogin')}}">Click Here to Log in </a>
-				</div>
-			</div>
-		{% endif %}
-	<br><br>
-
-		{% for restaurant in restaurants %}
-
-
-				<a href= '{{url_for('showMenu', restaurant_id = restaurant.id) }}'>{{ restaurant.name }}</a>
-		<br>
-		{% if 'username'in login_session %}
-			<br>
-
-				<a href = '{{url_for('editRestaurant', restaurant_id = restaurant.id) }}'>Edit Restaurant</a>
-			<br>
-
-				<a href = '{{url_for('deleteRestaurant', restaurant_id = restaurant.id) }}'>Delete Restaurant</a>
-
-			<br>
-			<br>
-		{% endif %}
-
-
-		{% endfor %}
-	</body>
-
+   <body>
+      <h1>RESTAURANTS</h1>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul>
+         {% for message in messages %}
+         <li><strong>{{ message }}</strong></li>
+         {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      {% if 'username' in login_session %}
+      <br><br>
+      <a href = '{{url_for('gdisconnect') }}'>LOGOUT</a>
+      <br><br>
+      <a href = '{{url_for('newRestaurant') }}'>Add a Restaurant</a>
+      {% else %}
+      <div class="row top-menu">
+         <div class="col-md-10"></div>
+         <div class="col-md-2 text-right">
+            <a href="{{url_for('showLogin')}}">Click Here to Log in </a>
+         </div>
+      </div>
+      {% endif %}
+      <br><br>
+      {% for restaurant in restaurants %}
+      <a href= '{{url_for('showMenu', restaurant_id = restaurant.id) }}'>{{ restaurant.name }}</a>
+      <br>
+      {% if 'username'in login_session %}
+      <br>
+      <a href = '{{url_for('editRestaurant', restaurant_id = restaurant.id) }}'>Edit Restaurant</a>
+      <br>
+      <a href = '{{url_for('deleteRestaurant', restaurant_id = restaurant.id) }}'>Delete Restaurant</a>
+      <br>
+      <br>
+      {% endif %}
+      {% endfor %}
+   </body>
 </html>

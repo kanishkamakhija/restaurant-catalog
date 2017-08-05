@@ -1,3 +1,5 @@
+#! /usr/bin/env python2
+
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker, relationship
 from database_setup import Base, Restaurant, MenuItem, User
@@ -32,8 +34,11 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# create a state token to prevent req forgery.
-# store it in a  session for later verification.
+
+"""
+    create a state token to prevent required forgery.
+    & store it in a session for later verification.
+"""
 
 
 @app.route('/login')
@@ -43,6 +48,12 @@ def showLogin():
     login_session['state'] = state
     # return "the current session state is %s" %login_session['state']
     return render_template('login.html', STATE=state)
+
+
+"""
+Third party authentication i.e.
+allow user to login throough gmail
+"""
 
 
 @app.route('/gconnect', methods=['POST'])
@@ -106,7 +117,7 @@ def gconnect():
     login_session['credentials'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
 
-    # get user info.
+    # get user Information through google account.
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
     params = {'access_token': credentials.access_token, 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
@@ -147,6 +158,12 @@ def gconnect():
 # DISCONNECT- revoke users token and reset their login session.
 
 
+"""
+Function to disconnect the connected user
+from their linked gmail account.
+"""
+
+
 @app.route('/gdisconnect')
 def gdisconnect():
     credentials = login_session.get('credentials')
@@ -179,13 +196,24 @@ def gdisconnect():
         return response
 
 
-# JSON APis to view Restaurant Information.
+"""
+Function that will return JSON APis
+to view Restaurant Information
+"""
+
+
 @app.route('/restaurant/<int:restaurant_id>/menu/JSON')
 def restaurantMenuJSON(restaurant_id):
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     items = session.query(MenuItem).filter_by(
         restaurant_id=restaurant_id).all()
     return jsonify(MenuItems=[i.serialize for i in items])
+
+
+"""
+Function that will return JSON APis
+to view Restaurant Menu Information
+"""
 
 
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/JSON')
@@ -200,7 +228,12 @@ def restaurantsJSON():
     return jsonify(restaurants=[r.serialize for r in restaurants])
 
 
-# show all restaurant
+"""
+Function that will display
+all restaurant currently present in the database.
+"""
+
+
 @app.route('/')
 @app.route('/restaurant/')
 def showRestaurants():
@@ -211,7 +244,12 @@ def showRestaurants():
         login_session=login_session)
 
 
-# creates new restaurant
+"""
+Function to add new restaurant
+in the database.
+"""
+
+
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
 def newRestaurant():
     if 'username' not in login_session:
@@ -227,7 +265,12 @@ def newRestaurant():
         return render_template('newrestaurant.html')
 
 
-# delete a restaurant
+"""
+Function to delete the restaurant
+from the database.
+"""
+
+
 @app.route('/restaurant/<int:restaurant_id>/delete/', methods=['GET', 'POST'])
 def deleteRestaurant(restaurant_id):
     restaurantToDelete = session.query(
@@ -252,7 +295,12 @@ def deleteRestaurant(restaurant_id):
             'deleterestaurant.html', restaurant=restaurantToDelete)
 
 
-# edit the restaurant
+"""
+Function to edit the existing restaurant
+in the database.
+"""
+
+
 @app.route('/restaurant/<int:restaurant_id>/edit/', methods=['GET', 'POST'])
 def editRestaurant(restaurant_id):
     editedRestaurant = session.query(
@@ -277,7 +325,12 @@ def editRestaurant(restaurant_id):
             'editrestaurant.html', restaurant=editedRestaurant)
 
 
-# show a restaurant menu
+"""
+Function to show the menu
+of the restaurant.
+"""
+
+
 @app.route('/restaurant/<int:restaurant_id>/')
 @app.route('/restaurant/<int:restaurant_id>/menu/')
 def showMenu(restaurant_id):
@@ -306,7 +359,12 @@ def showMenu(restaurant_id):
             creator=creator)
 
 
-# edit a menu.
+"""
+Function to edit the existing menu item
+in the restaurant menu.
+"""
+
+
 @app.route(
     '/restaurant/<int:restaurant_id>/menu/<int:menu_id>/edit',
     methods=['GET', 'POST'])
@@ -346,7 +404,12 @@ def editMenuItem(restaurant_id, menu_id):
             menu_id=menu_id, i=editedItem)
 
 
-# Create a new menu item
+"""
+Function to add a new menu item
+in the restaurant menu.
+"""
+
+
 @app.route(
     '/restaurant/<int:restaurant_id>/menu/new/',
     methods=['GET', 'POST'])
@@ -378,7 +441,12 @@ def newMenuItem(restaurant_id):
         return render_template('newmenuitem.html', restaurant_id=restaurant_id)
 
 
-# Delete a menu item
+"""
+Function to delete the existing menu item
+from the restaurant menu.
+"""
+
+
 @app.route(
     '/restaurant/<int:restaurant_id>/menu/<int:menu_id>/delete',
     methods=['GET', 'POST'])
@@ -408,7 +476,11 @@ def deleteMenuItem(restaurant_id, menu_id):
         return render_template('deleteMenuItem.html', item=itemToDelete)
 
 
-# user helper function.
+""" A user helper function.
+Creates a new user or allow a user to login.
+"""
+
+
 def createUser(login_session):
     newUser = User(name=login_session['username'],
                    email=login_session['email'],
@@ -417,6 +489,11 @@ def createUser(login_session):
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
+
+"""
+This function returns the information of the existing user
+from the user database.
+"""
 
 
 def getUserInfo(user_id):

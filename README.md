@@ -9,14 +9,14 @@ It is a project of an Full Stack Nano Degree under udacity.This project includes
 * VirtualBox
 
 ## INSTALLING
-* Install [https://www.vagrantup.com/](Vagrant)
-* Install [https://www.virtualbox.org/](VirtualBox)
-* Download or Clone (https://github.com/udacity/fullstack-nanodegree-vm)[Link to fullstack-nanodegree-vm ]
+* Install [Vagrant](https://www.vagrantup.com/)
+* Install [VirtualBox](https://www.virtualbox.org/)
+* Download or Clone [Link to fullstack-nanodegree-vm ](https://github.com/udacity/fullstack-nanodegree-vm)
 * Inside the folder /vagarant/catalog place your content or clone this directory from 
-  this (https://github.com/kanishkamakhija/restaurant-catalog)[Link]
+  this [Link](https://github.com/kanishkamakhija/restaurant-catalog)
 * Launch the Vagrant Machine using `vagrant up`
 * Run the web-app using `python /vagrant/catalog/main.py`
-* Open the browser window and type [http://localhost:8080](http://localhost:8080)
+* Open the browser window and type `http://localhost:8080`(http://localhost:8080)
 
 ## TO RUN
 * Launch Vagrant VM by running `vagrant up`, and after running you can the log in with `vagrant ssh`.
